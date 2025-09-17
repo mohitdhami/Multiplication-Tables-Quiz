@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Quiz (12-30)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .instructions h2 {
+            color: #2575fc;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        #start-screen {
+            display: block;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2575fc;
+            margin: 10px 0;
+        }
+        
+        .progress {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .option {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            background-color: #2575fc;
+            color: white;
+            border-color: #6a11cb;
+        }
+        
+        .score-card {
+            text-align: center;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        .score-text {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .score-details {
+            margin: 20px 0;
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .score-details h3 {
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+        
+        .incorrect-answer {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 500px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .question {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multiplication Tables Quiz (12-30, excluding 20)</h1>
+        
+        <div id="start-screen" class="screen">
+            <div class="instructions">
+                <h2>Instructions</h2>
+                <ul>
+                    <li>This quiz tests your knowledge of multiplication tables from 12 to 30 (excluding 20)</li>
+                    <li>Multiples range from 2 to 9 (e.g., 12×2 to 12×9)</li>
+                    <li>Total of 100 questions</li>
+                    <li>3 seconds per question (5 minutes total)</li>
+                    <li>Select an option before time runs out</li>
+                    <li>Your score will be displayed at the end</li>
+                </ul>
+                <p>Good luck!</p>
+            </div>
+            <button id="start-btn" class="btn">Start Quiz</button>
+        </div>
+        
+        <div id="quiz-screen" class="screen">
+            <div class="timer">Time left: <span id="time">3</span>s</div>
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+        </div>
+        
+        <div id="score-screen" class="screen">
+            <h2>Quiz Completed!</h2>
+            <div class="score-circle"><span id="score">0</span>/100</div>
+            <div class="score-text" id="score-percent">0%</div>
+            <div class="score-details">
+                <h3>Details</h3>
+                <p>Correct answers: <span id="correct-answers">0</span></p>
+                <p>Incorrect answers: <span id="incorrect-answers">0</span></p>
+                <p>Unanswered: <span id="unanswered">0</span></p>
+            </div>
+            <button id="restart-btn" class="btn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const startScreen = document.getElementById('start-screen');
+            const quizScreen = document.getElementById('quiz-screen');
+            const scoreScreen = document.getElementById('score-screen');
+            const startBtn = document.getElementById('start-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const questionEl = document.getElementById('question');
+            const optionsEl = document.getElementById('options');
+            const timeEl = document.getElementById('time');
+            const progressBar = document.getElementById('progress-bar');
+            const scoreEl = document.getElementById('score');
+            const scorePercent = document.getElementById('score-percent');
+            const correctAnswersEl = document.getElementById('correct-answers');
+            const incorrectAnswersEl = document.getElementById('incorrect-answers');
+            const unansweredEl = document.getElementById('unanswered');
+            
+            // Quiz variables
+            let questions = [];
+            let currentQuestion = 0;
+            let score = 0;
+            let correctAnswers = 0;
+            let incorrectAnswers = 0;
+            let unanswered = 0;
+            let timer;
+            let timeLeft;
+            
+            // Initialize the quiz
+            function initQuiz() {
+                generateQuestions();
+                currentQuestion = 0;
+                score = 0;
+                correctAnswers = 0;
+                incorrectAnswers = 0;
+                unanswered = 0;
+                
+                showQuestion();
+            }
+            
+            // Generate 100 random multiplication questions
+            function generateQuestions() {
+                questions = [];
+                const bases = [];
+                
+                // Create array of bases (12-30, excluding 20)
+                for (let i = 12; i <= 30; i++) {
+                    if (i !== 20) {
+                        bases.push(i);
+                    }
+                }
+                
+                // Generate 100 questions
+                for (let i = 0; i < 100; i++) {
+                    // Randomly select a base number
+                    const base = bases[Math.floor(Math.random() * bases.length)];
+                    // Random multiplier between 2 and 9
+                    const multiplier = Math.floor(Math.random() * 8) + 2;
+                    
+                    const correctAnswer = base * multiplier;
+                    
+                    // Generate wrong answers
+                    const wrongAnswers = generateWrongAnswers(base, multiplier, correctAnswer);
+                    
+                    // Combine and shuffle options
+                    const options = [correctAnswer, ...wrongAnswers];
+                    shuffleArray(options);
+                    
+                    questions.push({
+                        question: `${base} × ${multiplier} = ?`,
+                        options: options,
+                        correctAnswer: correctAnswer,
+                        base: base,
+                        multiplier: multiplier
+                    });
+                }
+            }
+            
+            // Generate wrong answers for a question
+            function generateWrongAnswers(base, multiplier, correctAnswer) {
+                const wrongAnswers = new Set();
+                
+                // Generate wrong answers by slightly modifying the correct answer
+                while (wrongAnswers.size < 3) {
+                    // Different approaches to generate wrong answers
+                    let wrongAnswer;
+                    const approach = Math.floor(Math.random() * 3);
+                    
+                    switch(approach) {
+                        case 0:
+                            // Change base slightly
+                            const baseMod = Math.floor(Math.random() * 3) + 1;
+                            const newBase = Math.random() > 0.5 ? base + baseMod : base - baseMod;
+                            wrongAnswer = newBase * multiplier;
+                            break;
+                        case 1:
+                            // Change multiplier slightly
+                            const multiplierMod = Math.floor(Math.random() * 2) + 1;
+                            const newMultiplier = Math.random() > 0.5 ? multiplier + multiplierMod : multiplier - multiplierMod;
+                            wrongAnswer = base * newMultiplier;
+                            break;
+                        case 2:
+                            // Random calculation near correct answer
+                            const deviation = Math.floor(Math.random() * 10) + 1;
+                            wrongAnswer = Math.random() > 0.5 ? correctAnswer + deviation : correctAnswer - deviation;
+                            break;
+                    }
+                    
+                    // Ensure wrong answer is positive, not equal to correct answer, and not already added
+                    if (wrongAnswer > 0 && wrongAnswer !== correctAnswer) {
+                        wrongAnswers.add(wrongAnswer);
+                    }
+                }
+                
+                return Array.from(wrongAnswers);
+            }
+            
+            // Fisher-Yates shuffle algorithm
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+            
+            // Display current question
+            function showQuestion() {
+                clearInterval(timer);
+                
+                if (currentQuestion >= questions.length) {
+                    showScore();
+                    return;
+                }
+                
+                const question = questions[currentQuestion];
+                questionEl.textContent = question.question;
+                
+                // Clear previous options
+                optionsEl.innerHTML = '';
+                
+                // Add new options
+                question.options.forEach(option => {
+                    const optionEl = document.createElement('div');
+                    optionEl.className = 'option';
+                    optionEl.textContent = option;
+                    optionEl.addEventListener('click', () => selectOption(option));
+                    optionsEl.appendChild(optionEl);
+                });
+                
+                // Start timer
+                timeLeft = 3;
+                timeEl.textContent = timeLeft;
+                progressBar.style.width = '100%';
+                
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timeEl.textContent = timeLeft;
+                    progressBar.style.width = `${(timeLeft / 3) * 100}%`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        unanswered++;
+                        currentQuestion++;
+                        setTimeout(showQuestion, 500);
+                    }
+                }, 1000);
+            }
+            
+            // Handle option selection
+            function selectOption(selectedOption) {
+                clearInterval(timer);
+                
+                const question = questions[currentQuestion];
+                const options = optionsEl.querySelectorAll('.option');
+                
+                // Mark selected option and correct answer
+                options.forEach(option => {
+                    const optionValue = parseInt(option.textContent);
+                    
+                    if (optionValue === selectedOption) {
+                        option.classList.add('selected');
+                    }
+                    
+                    if (optionValue === question.correctAnswer) {
+                        option.classList.add('correct-answer');
+                    } else if (optionValue === selectedOption && selectedOption !== question.correctAnswer) {
+                        option.classList.add('incorrect-answer');
+                    }
+                });
+                
+                // Update score
+                if (selectedOption === question.correctAnswer) {
+                    score++;
+                    correctAnswers++;
+                } else {
+                    incorrectAnswers++;
+                }
+                
+                // Move to next question after a brief delay
+                setTimeout(() => {
+                    currentQuestion++;
+                    showQuestion();
+                }, 1000);
+            }
+            
+            // Show score screen
+            function showScore() {
+                quizScreen.style.display = 'none';
+                scoreScreen.style.display = 'block';
+                
+                scoreEl.textContent = score;
+                const percentage = Math.round((score / questions.length) * 100);
+                scorePercent.textContent = `${percentage}%`;
+                
+                correctAnswersEl.textContent = correctAnswers;
+                incorrectAnswersEl.textContent = incorrectAnswers;
+                unansweredEl.textContent = unanswered;
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                quizScreen.style.display = 'block';
+                initQuiz();
+            });
+            
+            restartBtn.addEventListener('click', () => {
+                scoreScreen.style.display = 'none';
+                startScreen.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
